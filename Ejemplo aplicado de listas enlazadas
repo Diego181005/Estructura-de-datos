@@ -14,39 +14,36 @@ public:
 class LinkedList {
 private:
     Node* first;
+    Node* last;
 
 public:
     LinkedList() {
         first = nullptr;
+        last = nullptr;
     }
 
-    LinkedList(string nombres[], int notas[], int semestres[], string carreras[], int n);
+    void agregarEstudiante(string nombre, int nota, int semestre, string carrera);
     void mostrar();
     int contarAprobados();
     int contarReprobados();
     int notaMayor();
     int notaMenor();
+    bool eliminarEstudiantePorNombre(string nombre);
 };
 
-LinkedList::LinkedList(string nombres[], int notas[], int semestres[], string carreras[], int n) {
-    Node* last, * t;
-    first = new Node();
-    first->nombre = nombres[0];
-    first->nota = notas[0];
-    first->semestre = semestres[0];
-    first->carrera = carreras[0];
-    first->next = nullptr;
-    last = first;
+void LinkedList::agregarEstudiante(string nombre, int nota, int semestre, string carrera) {
+    Node* nuevo = new Node();
+    nuevo->nombre = nombre;
+    nuevo->nota = nota;
+    nuevo->semestre = semestre;
+    nuevo->carrera = carrera;
+    nuevo->next = nullptr;
 
-    for (int i = 1; i < n; i++) {
-        t = new Node();
-        t->nombre = nombres[i];
-        t->nota = notas[i];
-        t->semestre = semestres[i];
-        t->carrera = carreras[i];
-        t->next = nullptr;
-        last->next = t;
-        last = t;
+    if (first == nullptr) {
+        first = last = nuevo;
+    } else {
+        last->next = nuevo;
+        last = nuevo;
     }
 }
 
@@ -84,6 +81,7 @@ int LinkedList::contarReprobados() {
 }
 
 int LinkedList::notaMayor() {
+    if (!first) return -1;
     Node* p = first;
     int maxNota = p->nota;
     while (p) {
@@ -95,6 +93,7 @@ int LinkedList::notaMayor() {
 }
 
 int LinkedList::notaMenor() {
+    if (!first) return -1;
     Node* p = first;
     int minNota = p->nota;
     while (p) {
@@ -105,22 +104,87 @@ int LinkedList::notaMenor() {
     return minNota;
 }
 
+bool LinkedList::eliminarEstudiantePorNombre(string nombre) {
+    Node* p = first;
+    Node* prev = nullptr;
+
+    while (p) {
+        if (p->nombre == nombre) {
+            if (p == first) {
+                first = first->next;
+                if (p == last) last = nullptr;
+            } else {
+                prev->next = p->next;
+                if (p == last) last = prev;
+            }
+            delete p;
+            return true;
+        }
+        prev = p;
+        p = p->next;
+    }
+    return false; // No se encontró el estudiante
+}
+
 int main() {
-    string nombres[] = {"Ana", "Luis", "Maria", "Pedro"};
-    int notas[] = {90, 40, 80, 30};
-    int semestres[] = {2, 1, 3, 2};
-    string carreras[] = {"Ingeniería", "Derecho", "Medicina", "Arquitectura"};
-    int n = sizeof(notas) / sizeof(notas[0]);
+    LinkedList lista;
+    int opcion;
 
-    LinkedList lista(nombres, notas, semestres, carreras, n);
+    do {
+        cout << "\n----- MENU -----\n";
+        cout << "1. Agregar estudiante\n";
+        cout << "2. Mostrar estudiantes\n";
+        cout << "3. Eliminar estudiante por nombre\n";
+        cout << "4. Mostrar estadísticas\n";
+        cout << "5. Salir\n";
+        cout << "Seleccione una opción: ";
+        cin >> opcion;
+        cin.ignore();
 
-    cout << "Listado de estudiantes:\n";
-    lista.mostrar();
+        if (opcion == 1) {
+            string nombre, carrera;
+            int nota, semestre;
 
-    cout << "\nCantidad de aprobados: " << lista.contarAprobados() << endl;
-    cout << "Cantidad de reprobados: " << lista.contarReprobados() << endl;
-    cout << "Nota más alta: " << lista.notaMayor() << endl;
-    cout << "Nota más baja: " << lista.notaMenor() << endl;
+            cout << "Nombre: ";
+            getline(cin, nombre);
+            cout << "Nota: ";
+            cin >> nota;
+            cout << "Semestre: ";
+            cin >> semestre;
+            cin.ignore();
+            cout << "Carrera: ";
+            getline(cin, carrera);
+
+            lista.agregarEstudiante(nombre, nota, semestre, carrera);
+            cout << "Estudiante agregado.\n";
+
+        } else if (opcion == 2) {
+            lista.mostrar();
+
+        } else if (opcion == 3) {
+            string nombre;
+            cout << "Ingrese el nombre del estudiante a eliminar: ";
+            getline(cin, nombre);
+            if (lista.eliminarEstudiantePorNombre(nombre)) {
+                cout << "Estudiante eliminado.\n";
+            } else {
+                cout << "Estudiante no encontrado.\n";
+            }
+
+        } else if (opcion == 4) {
+            cout << "Aprobados: " << lista.contarAprobados() << endl;
+            cout << "Reprobados: " << lista.contarReprobados() << endl;
+            cout << "Nota más alta: " << lista.notaMayor() << endl;
+            cout << "Nota más baja: " << lista.notaMenor() << endl;
+
+        } else if (opcion == 5) {
+            cout << "Saliendo...\n";
+        } else {
+            cout << "Opción inválida.\n";
+        }
+
+    } while (opcion != 5);
 
     return 0;
 }
+
