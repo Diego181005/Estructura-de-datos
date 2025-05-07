@@ -1,0 +1,126 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Node {
+public:
+    string nombre;
+    int nota;
+    int semestre;
+    string carrera;
+    Node* next;
+};
+
+class LinkedList {
+private:
+    Node* first;
+
+public:
+    LinkedList() {
+        first = nullptr;
+    }
+
+    LinkedList(string nombres[], int notas[], int semestres[], string carreras[], int n);
+    void mostrar();
+    int contarAprobados();
+    int contarReprobados();
+    int notaMayor();
+    int notaMenor();
+};
+
+LinkedList::LinkedList(string nombres[], int notas[], int semestres[], string carreras[], int n) {
+    Node* last, * t;
+    first = new Node();
+    first->nombre = nombres[0];
+    first->nota = notas[0];
+    first->semestre = semestres[0];
+    first->carrera = carreras[0];
+    first->next = nullptr;
+    last = first;
+
+    for (int i = 1; i < n; i++) {
+        t = new Node();
+        t->nombre = nombres[i];
+        t->nota = notas[i];
+        t->semestre = semestres[i];
+        t->carrera = carreras[i];
+        t->next = nullptr;
+        last->next = t;
+        last = t;
+    }
+}
+
+void LinkedList::mostrar() {
+    Node* p = first;
+    while (p) {
+        cout << "Nombre: " << p->nombre
+             << ", Nota: " << p->nota
+             << ", Semestre: " << p->semestre
+             << ", Carrera: " << p->carrera << endl;
+        p = p->next;
+    }
+}
+
+int LinkedList::contarAprobados() {
+    Node* p = first;
+    int count = 0;
+    while (p) {
+        if (p->nota > 50)
+            count++;
+        p = p->next;
+    }
+    return count;
+}
+
+int LinkedList::contarReprobados() {
+    Node* p = first;
+    int count = 0;
+    while (p) {
+        if (p->nota <= 50)
+            count++;
+        p = p->next;
+    }
+    return count;
+}
+
+int LinkedList::notaMayor() {
+    Node* p = first;
+    int maxNota = p->nota;
+    while (p) {
+        if (p->nota > maxNota)
+            maxNota = p->nota;
+        p = p->next;
+    }
+    return maxNota;
+}
+
+int LinkedList::notaMenor() {
+    Node* p = first;
+    int minNota = p->nota;
+    while (p) {
+        if (p->nota < minNota)
+            minNota = p->nota;
+        p = p->next;
+    }
+    return minNota;
+}
+
+int main() {
+    string nombres[] = {"Ana", "Luis", "Maria", "Pedro"};
+    int notas[] = {90, 40, 80, 30};
+    int semestres[] = {2, 1, 3, 2};
+    string carreras[] = {"Ingeniería", "Derecho", "Medicina", "Arquitectura"};
+    int n = sizeof(notas) / sizeof(notas[0]);
+
+    LinkedList lista(nombres, notas, semestres, carreras, n);
+
+    cout << "Listado de estudiantes:\n";
+    lista.mostrar();
+
+    cout << "\nCantidad de aprobados: " << lista.contarAprobados() << endl;
+    cout << "Cantidad de reprobados: " << lista.contarReprobados() << endl;
+    cout << "Nota más alta: " << lista.notaMayor() << endl;
+    cout << "Nota más baja: " << lista.notaMenor() << endl;
+
+    return 0;
+}
